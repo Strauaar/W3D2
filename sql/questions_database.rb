@@ -5,6 +5,7 @@ require_relative 'question_follows'
 require_relative 'replies'
 require_relative 'question_likes'
 
+
 class QuestionsDatabase < SQLite3::Database
   include Singleton
 
@@ -16,12 +17,21 @@ class QuestionsDatabase < SQLite3::Database
 
 end
 
-class User
+
+class Superclass
+
+  def self.all(t_name)
+    data = QuestionsDatabase.instance.execute("SELECT * FROM #{t_name}")
+    data.map { |data| Question.new(data) }
+  end
+
+end
+
+class User < SUPERCLASS
   attr_accessor :fname, :lname
 
   def self.all
-    data = QuestionsDatabase.instance.execute("SELECT * FROM users")
-    data.map { |data| User.new(data) }
+      super('users')
   end
 
   def self.find_by_id(id)
@@ -73,5 +83,28 @@ class User
   def authored_replies
     Reply.find_by_user_id(@id)
   end
+
+  def followed_questions
+    QuestionFollow.followed_questions_for_user_id(@id)
+  end
+
+  def liked_questions
+    Like.liked_questions_for_user_id(@id)
+  end
+
+  def average_karma
+    QuestionsDatabase.instance.execute(<<-SQL)
+      SELECT
+        fname, lname, CAST(COUNT(question_likes.user_id)/COUNT(DISTINCT body )AS FLOAT) AS average_karma
+      FROM
+        users
+        JOIN questions
+        ON users.id = questions.user_id
+        JOIN question_likes
+        ON questions.id = question_likes.question_id
+        GROUP BY body;
+    SQL
+  end
+
 
 end
