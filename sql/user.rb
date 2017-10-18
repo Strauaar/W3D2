@@ -1,5 +1,6 @@
 require 'sqlite3'
 require 'singleton'
+require_relative 'superclass'
 require_relative 'question'
 require_relative 'question_follows'
 require_relative 'replies'
@@ -17,34 +18,16 @@ class QuestionsDatabase < SQLite3::Database
 
 end
 
+class User < SuperClass
 
-class Superclass
-
-  def self.all(t_name)
-    data = QuestionsDatabase.instance.execute("SELECT * FROM #{t_name}")
-    data.map { |data| Question.new(data) }
-  end
-
-end
-
-class User < SUPERCLASS
   attr_accessor :fname, :lname
 
   def self.all
-      super('users')
+    super('users', self)
   end
 
   def self.find_by_id(id)
-    user = QuestionsDatabase.instance.execute(<<-SQL, id)
-    SELECT
-      *
-    FROM
-      users
-    WHERE
-      id = ?
-    SQL
-
-    User.new(user.first)
+    super(id, self, 'users')
   end
 
   def self.find_by_name(fname, lname)

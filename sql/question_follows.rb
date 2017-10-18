@@ -1,24 +1,14 @@
-require_relative 'questions_database.rb'
+require_relative 'user'
 
-class QuestionFollow
+class QuestionFollow < SuperClass
   attr_accessor :question_id, :user_id
 
   def self.all
-    data = QuestionsDatabase.instance.execute("SELECT * FROM question_follows")
-    data.map { |data| QuestionFollow.new(data) }
+    super('question_follows', self)
   end
 
   def self.find_by_id(id)
-    question_follows = QuestionsDatabase.instance.execute(<<-SQL, id)
-    SELECT
-      *
-    FROM
-      question_follows
-    WHERE
-      id = ?
-    SQL
-
-    QuestionFollow.new(question_follows.first)
+    super(id, self, 'question_follows')
   end
 
   def self.followers_for_question_id(question_id)
@@ -74,7 +64,7 @@ class QuestionFollow
     SQL
     most_followed.each { |q| Question.find_by_id(q['question_id']) }
   end
-  
+
   def initialize(options)
     @user_id = options['user_id']
     @question_id = options['question_id']

@@ -1,24 +1,15 @@
-require_relative 'questions_database.rb'
+require_relative 'user'
 
 
-class Question
+class Question < SuperClass
   attr_accessor :title, :body, :user_id
 
   def self.all
-  
+    super('questions', self)
   end
 
   def self.find_by_id(id)
-    question = QuestionsDatabase.instance.execute(<<-SQL, id)
-    SELECT
-      *
-    FROM
-      questions
-    WHERE
-      id = ?
-    SQL
-
-    Question.new(question.first)
+    super(id, self, 'questions')
   end
 
   def self.find_by_author_id(author_id)

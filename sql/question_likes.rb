@@ -1,24 +1,16 @@
-require_relative 'questions_database.rb'
-require_relative 'question'
-class Like
+require_relative 'user'
+
+
+class Like < SuperClass
+
   attr_accessor :user_id, :question_id
 
   def self.all
-    data = QuestionsDatabase.instance.execute("SELECT * FROM question_likes")
-    data.map { |data| Like.new(data) }
+    super('question_likes', self)
   end
 
   def self.find_by_id(id)
-    like = QuestionsDatabase.instance.execute(<<-SQL, id)
-    SELECT
-      *
-    FROM
-      question_likes
-    WHERE
-      id = ?
-    SQL
-
-    Like.new(like.first)
+    super(id, self, 'question_likes')
   end
 
   def self.likers_for_question_id(question_id)

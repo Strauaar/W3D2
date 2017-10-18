@@ -1,24 +1,16 @@
-require_relative 'questions_database.rb'
+require_relative 'user'
 require 'byebug'
-class Reply
+
+class Reply < SuperClass
+
   attr_accessor :user_id, :parent_reply_id, :body, :question_id
 
   def self.all
-    reply = QuestionsDatabase.instance.execute("SELECT * FROM replies")
-    reply.map { |data| Reply.new(data) }
+    super('replies', self)
   end
 
   def self.find_by_id(id)
-    reply = QuestionsDatabase.instance.execute(<<-SQL, id)
-    SELECT
-      *
-    FROM
-      replies
-    WHERE
-      id = ?
-    SQL
-
-    Reply.new(reply.first)
+    super(id, self, 'question_likes')
   end
 
   def self.find_by_user_id(user_id)
