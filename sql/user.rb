@@ -3,7 +3,7 @@ require 'singleton'
 require_relative 'superclass'
 require_relative 'question'
 require_relative 'question_follows'
-require_relative 'replies'
+require_relative 'reply'
 require_relative 'question_likes'
 
 

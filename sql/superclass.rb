@@ -1,3 +1,5 @@
+require 'active_support/inflector'
+
 class SuperClass
 
   def self.all(table_name, classe)
@@ -10,12 +12,13 @@ class SuperClass
     SELECT
       *
     FROM
-      #{table_name}
+      #{self.to_s.tableize}
     WHERE
       id = ?
     SQL
-
-    classe.new(query.first)
+    puts self
+    puts self.to_s.tableize
+    self.new(query.first)
   end
 
 end
